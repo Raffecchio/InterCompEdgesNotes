@@ -1,0 +1,44 @@
+\documentclass{article}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage[margin=0.5in]{geometry}
+
+
+\begin{document}
+	Overall method: To track the number of inter-compoenent edges, define a procedure $\mathcal P$ which, starting from an empty graph:
+	\begin{itemize}
+		\item Selects a component $A$, and either grows it by sampling edges with some probability, or, in the case of failure,
+		\item Removes all edges from the sampling pool
+	\end{itemize}
+	Let $X(\mathcal P')$ be the number of inter-component edges produced by random procedure $\mathcal P'$. Let $\mathcal K$ denote expected k-out. We will define $\mathcal P$ so that $X(\mathcal P) = O(n / k)$ implies $X(\mathcal K) = O(n / k)$.
+	% Let $X = (\text{ $\#$ I-C edges produced by $\mathcal P$ })$ and $X' = (\text{$\#$ I-C edges produced by expected $k$-out})$.
+	% $X$ should stochastically dominate $X'$ with high enough probability that bounding the former as $O(n / k)$ implies the same bound for the latter.\\
+	Two types of components:
+
+
+	\noindent \textbf{\large High-degree components: $d_H(A) > 2\left| A \right|$}
+		
+	\textbf{Author's Method}: 
+	(omitted)
+	% \begin{itemize}
+	% 	\item At a high level, here we can afford to ensure at least one edge gets sampled. 
+	% 	\item Repeatedly sample edges adjacent to $v(A)$ w.p. $1/d$ until at least one edge leaving $A$ is found.
+	% 	\item $\mathbb P[\text{success}] = 1/2 \cdot (1 - (1 - 1/d)^d) > 1/2 \cdot 1/2 = 1/4$.
+	% 	\item Thus, $\mathbb P[\text{$v$ participates in $> 32 \log n$ rounds}] \le \mathbb P[X < \log n]$, where $X \sim B(32 \log n, 1/4)$, which by Chernoff is bounded by $n^{-3}$, which implies no vertex participates in so many rounds w.p. at most $n^-2$.
+	% \end{itemize}
+
+	Here, we can sample exactly one edge from the $\ge d/2$ edges from $v$ leaving $A$, each w.p. $2/d$. Then since each vertex participates in $O(\log n)$ growth steps, a (directed) edge's total sampling probability is $O(\log n/d)$.\\
+	To show this does not disturb the result, define an alternate procedure $\mathcal P_{HD}$ in which instead edges adjacent to $v$ are those in a fixed random expected k-out graph. Then clearly $X(\mathcal P)$ stochastically dominates $X(\mathcal P_{HD}) | S$, where $S$ is the event all high-degree growth steps succeed in $\mathcal P_{HD}$. And for $k = \Omega (\log n)$, $\mathbb P[\neg S] \le \log n \cdot (1 - k / d)^{d / 2} \le \log n \cdot e^{-k / 2} \le \log n \cdot n^{-c / 2}$. So given the cost of at most $n^2$ edges in the case of $\neg S$, with high enough $c$ we need only consider the case $S$ holds.
+	Two potential points of missed proof efficiency here:
+	\begin{itemize}
+		\item Not all vertices in $A$ can participate in $\log n$ rounds. Actually for high-degree components, there is one vertex per round. Maybe there are just $O(n)$ rounds? If so, each would involve a single vertex.
+			% Here not only does an edge participate in at most $\log n$ high-degree growth rounds, but actually the total high-degree growth rounds participated in by all $v \in A$ is $\log n$.
+		\item Assuming $k = \omega(\log n)$, we can actually define a high-degree component as one such that an $O(\log n / d)$ fraction of edges adjacent to $v$ leave $A$. I don't think this can help the proof for exact k-out, but perhaps it could simplify the proof for expected k-out?
+	\end{itemize}
+	Notes:
+		\begin{itemize}
+			\item This is one possible place where the ``key" to the difference between expected k-out and exact k-out may lie. The probability of failure in expected k-out is ``too high" here for $k = o(\log n)$.
+			\item Can we get a bound on this case specifically for $k \leq \log n$ and exact expected $k$-out?
+		\end{itemize}
+	2. Low-degree components: $d \leq 2\left| A \right|$
+\end{document}
