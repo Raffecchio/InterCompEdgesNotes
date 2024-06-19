@@ -10,13 +10,14 @@
 		\item Selects a component $A$, and either grows it by sampling edges with some probability, or, in the case of failure,
 		\item Removes all edges from the sampling pool
 	\end{itemize}
-	Let $X(\mathcal P')$ be the number of inter-component edges produced by random procedure $\mathcal P'$. Let $\mathcal K$ denote expected k-out. We will define $\mathcal P$ so that $X(\mathcal P) = O(n / k)$ implies $X(\mathcal K) = O(n / k)$.
+	Let $X(\mathcal P')$ be the number of inter-component edges produced by randomized procedure $\mathcal P'$. Let $\mathcal K$ denote expected k-out. We will define $\mathcal P$ so that $X(\mathcal P) = O(n / k)$ implies $X(\mathcal K) = O(n / k)$.
 	% Let $X = (\text{ $\#$ I-C edges produced by $\mathcal P$ })$ and $X' = (\text{$\#$ I-C edges produced by expected $k$-out})$.
 	% $X$ should stochastically dominate $X'$ with high enough probability that bounding the former as $O(n / k)$ implies the same bound for the latter.\\
 	Two types of components:
 
 
-	\noindent \textbf{\large High-degree components: $d_H(A) > 2\left| A \right|$}
+	\vspace{1cm}
+	\noindent \underline{\textbf{\large High-degree components: $d_H(A) > 2\left| A \right|$}}
 		
 	\textbf{Author's Method}: 
 	(omitted)
@@ -31,14 +32,45 @@
 	To show this does not disturb the result, define an alternate procedure $\mathcal P_{HD}$ in which instead edges adjacent to $v$ are those in a fixed random expected k-out graph. Then clearly $X(\mathcal P)$ stochastically dominates $X(\mathcal P_{HD}) | S$, where $S$ is the event all high-degree growth steps succeed in $\mathcal P_{HD}$. And for $k = \Omega (\log n)$, $\mathbb P[\neg S] \le \log n \cdot (1 - k / d)^{d / 2} \le \log n \cdot e^{-k / 2} \le \log n \cdot n^{-c / 2}$. So given the cost of at most $n^2$ edges in the case of $\neg S$, with high enough $c$ we need only consider the case $S$ holds.
 	Two potential points of missed proof efficiency here:
 	\begin{itemize}
-		\item Not all vertices in $A$ can participate in $\log n$ rounds. Actually for high-degree components, there is one vertex per round. Maybe there are just $O(n)$ rounds? If so, each would involve a single vertex.
+		\item Not all vertices in $A$ can participate in $\log n$ rounds. Actually for high-degree components, there is one vertex per round. There should just be $O(n)$ rounds (consider the graph induced on the components and the fact that each growth of this sort involves sampling from one vertex).
 			% Here not only does an edge participate in at most $\log n$ high-degree growth rounds, but actually the total high-degree growth rounds participated in by all $v \in A$ is $\log n$.
-		\item Assuming $k = \omega(\log n)$, we can actually define a high-degree component as one such that an $O(\log n / d)$ fraction of edges adjacent to $v$ leave $A$. I don't think this can help the proof for exact k-out, but perhaps it could simplify the proof for expected k-out?
+		\item Assuming $k = \omega(\log n)$, we can actually define a high-degree component as one such that an $O(\log n / k)$ fraction of edges adjacent to $v$ leave $A$. I don't think this can help the proof for exact k-out, but perhaps it could simplify the proof for expected k-out?
 	\end{itemize}
 	Notes:
 		\begin{itemize}
 			\item This is one possible place where the ``key" to the difference between expected k-out and exact k-out may lie. The probability of failure in expected k-out is ``too high" here for $k = o(\log n)$.
 			\item Can we get a bound on this case specifically for $k \leq \log n$ and exact expected $k$-out?
+			\item A proof for exact $k$ out might involve keeping track of how many edges left we can sample from each vertex and `pulling' outgoing edges as needed
 		\end{itemize}
-	2. Low-degree components: $d \leq 2\left| A \right|$
+
+	\vspace{1cm}
+	\noindent \underline{\large \textbf{Low-degree components:} $d \leq 2\left| A \right|$}\\
+	\textbf{Question:} Which parts are affected by $k = o(\log n)$?
+	\begin{itemize}
+		\item \textbf{ Type 0 } ($\rho(A) < 1$): Simply remove all edges. Then type 0 components are disjoint, so total edges removed $ = \sum_i |\partial_{H_i} A_i| = \sum_i \rho_i(A) |A_i| / k < n / k$.
+	\end{itemize}
+	If each edge in the component is sampled with probability $q$, the cost of a low-degree component is $|\partial_H A| (1 - q)^{|\partial_H A|} \le |\partial_H A|\exp(-q |\partial_H A|)$
+	% With $q = C \cdot \frac{k}{\sqrt{d_H(v) |A|}}$, 
+	\begin{itemize}
+		\item \textbf{ Type 1 } ($d < 5|\partial_H A|$): $\frac{\text{cost}(A)}{|A|} \le \rho(A)\exp\left(-C k \rho(A) (|A|/d)^{1/2}\right) \le \rho(A)\exp(-C k (\rho(A)/ 5)^{1/2}) \\< 1/k \exp(-C(k/5)^{1/2})$ for large enough $C$ from $f(x) = x^\beta e^{-ax^\gamma}$ lemma. Since $k = \Omega(\log n)$, $k = \omega((\log \log n)^2)$, implying $\text{cost}(A) / |A| = o(1/(k \log n))$.\\
+		\text{Note:} I think we can simplify this given that failed components are disjoint and achieve $O(n/ k)$ cost without requiring $k = \Omega (\log n)$.
+		Question: Can this be modified by changing condition to $|A| < |\partial_H A|$? then the other condition would be $|\partial_H A| < |A|$
+	\end{itemize}
+	Question: Why does a higher degree necessitate a different proof? Why can't it subsume the above?
+	 - Because if the degree is very high 
+
+	\textbf{Questions:}
+	\begin{itemize}
+		\item How/can we use the $O(n)$ total vertex sampling participations during HD to make a weaker/different definition of ``high-degree"?
+		\item Does weakining HD definition to $O(d \log n / k)$ outgoing vertices or $d > |A|(1 + c'\log n / k)$ allow any simplification? Could any part of the LD proof benefit from $ v $ has $> d(1 - c'\log n/k)$ neighbors in $A$, or $d \le |A|(1 + c'\log n/k)$? Check if any part of the LD proof requires/could be simplified with some guarantee on the relation between $k$ and $|A|$ or $d$.
+
+		\item Why can't we make $q = C \cdot k / d$ or $q = C\cdot k/|A|$?
+			\begin{itemize}
+				\item Cannot do $q = C\cdot k / d$ because each vertex participates in $O(\log n)$ rounds. Must have a $|A|$ in the denom.
+				\item Cannot do $q = C\cdot k / |A|$ because...
+			\end{itemize}
+		
+	\end{itemize}
+	% tasks:
+	%  - write up simple proof steps here
 \end{document}
