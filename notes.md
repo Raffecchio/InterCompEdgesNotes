@@ -1,5 +1,4 @@
 Paper [Here](https://arxiv.org/pdf/1909.11147)
-\href{Here}
 For an arbitrary graph $G$ , define a procedure which yields a number of inter-component edges $X_P$ such that $\mathbb E[X_P] = O(n / k)$ implies the number of edges from expected $k$-out $X_k$ has $\mathbb E[X_k] = O(n / k)$.
 
 Authors track a sampling pool $H$ of edges and define a procedure which starting from an empty graph selects the smallest component $A$ such that at least one edge in $H$ leaves $A$ and:
@@ -30,7 +29,6 @@ __Author's argument:__
 #### Low-Degree
 
  - First, it is easy to prove IC edges are $O(n\log n / k)$ , as follows: Sample each edge with probability $q = C \cdot \frac{k}{|A|}$. Then the cost of growing $A$ is at most $|\partial_H A|(1 - C\cdot \frac{k}{|A|})^{|\partial_H A|} < |\partial_H A|\exp(-Ck|\partial_H A|/|A|) < \frac{|A|}{Ck}$. Thus for all low-deg growth steps the cost is at most $\frac{\sum_i |A_i|}{Ck} = O(n\log n/k)$.
-    - This might mean that to get a better bound, we cannot simply 
 
 ##### Five types (each assuming preceding types are unsatisfied):
  - 0: $\rho(A) < 1$
@@ -51,9 +49,22 @@ __Author's argument:__
         where the last inequality follows from that $(1)$, letting $x=\rho(A)$, is maximized at $x_0 = (2/C)^25/k$.
     - Thus each vertex incurs a total cost of at most $n\log n * O(1/(k\log n)) = O(n / k)$.
  - 2: $A$ is the first low-degree component of level $\le \ell(A)$ containing $v(A)$
-    - ...
+    - Then the same is true for at least half the neighbors of $v(A)$.
+      - __Pr__: Assume not, then at least $d_H(A)/2$ vertices in $A$ are contained in components $B_1,\ldots, B_s$ of level at most $\ell(A)$. Then the number of neighbors of $v$ is at most $\sum_i|\partial_H B_i| \le \sum_i 2^{\ell(B_i) + 1} |B_i|/k \le 2^{\ell(A) + 1} \sum_i |B_i| / k \le 2^{\ell(A) + 1} |A|/k \le 2|\partial_H A|$. Thus $d_H(v) \le 2(2|\partial_H A|) + |\partial_H A| = 5|\partial_H A|$, a contradiction.
+    - So there are, up to a constant factor, $d(A)$ vertices whose level got reduced by $A$. Then can charge each of these (again up to constant factor) 
+    $$
+    \frac{\text{cost}(A)}{d} \le \frac{2^{\ell(A)}}{k} (|A|/d)\exp(-C 2^{\ell(A)}(|A|/d)^{1/2}) \le \frac{2^{\ell(A)}}{k}(\frac{2}{C2^{\ell(A)}e})^2 \le \frac{2^{-\ell(A)}}{k}
+    $$
+    And it follows that a single vertex will accumulate cost $O(1/k)$ over all types 2 growth steps.
+
  - 3: $A$ is not the first low-degree component of level $\le \ell(A)$ of $v(A)$
-    - ...
+    - Then $v(A)$ was in non-type-2 component $B$ which had maximum degree $d' \ge d_H(A)$ at the time of growing.
+    - Then: <!-- $\rho(B) \le 2\rho(A)$ -->
+    $$
+    |A|\text{cost}(A) \le 2^{\ell(A)}/k |A|^2 \exp(-C2^{\ell(A)}(|A|/d)^{1/2}) \le 2^{\ell(B)}/k |B|^2 \exp(-C 2^{\ell(B)}(|B|/d)^{1/2})\\
+    \le |B|\text{cost}(B)
+    $$
+    This means that we can offload the cost of $A$ to $B$, so that the cost of type-3 growth steps accrued by $B$ is at most $\sum_{i \ge 1} 2^{-i} \text{cost}(B) < \text{cost}(B)$.
 
 ##### Notes:
  - Can the above types for low-degree components can be removed after adding the little extra insight, which is that during a low-d $v$ in low-degree component $A$, if $A$ grows, the ratio $d/|A|$ is halved? Might require some complicated bounding.
@@ -64,14 +75,27 @@ __Author's argument:__
     \end{align*} $$
     - But this does not work since $d_H(A)$ is the *maximum* degree of $v\in A$, which might be very close to $2|A|$ at every step.
     - I don't think the $d_H(A)$ can be replaced with $d_H(v)$, since the  above bound is existentially "tight" for the case that all boundary edges are adjacent to the same vertex.
-    <!--
-    - But the above is not sufficient, and it is instead sufficient to get
-    $$ \begin{align*}
-        \text{cost}(A) &< O(\sum_{v\in A} \frac{k \sqrt{d_H(v)}}{\sqrt{|A|}})\\
-        \iff |\partial_HA|\exp(-C (\sum_{v\in A} q_v d^+_v)) &< \cdots\\
-        \leftarrow &< 5
-    \end{align*}$$
-    -->
+        <!-- - Is it? Say $d_H(A) \ge \frac{1}{2}|\partial_H A|$. -->
+ - More generally, since there are $O(2n)$ total growth steps, it suffices that the cost of each step is $O(1/k)$. Given a probability $q_i$ and outgoing edge count $d^+_i$ for each vertex, it thus suffices that:
+ $$
+ |\partial_H A| \exp(-\sum_i q_i d^+_i) \le C/k\\
+ \iff \log C + \sum_i q_i d^+_i \ge \log(k|\partial_H A|) $$
+ - I.e., we can expect to sample at least $\log (k|\partial_H A|)$ edges from the boundary.
+ - Alternatively, we can get each step to $O(|A|/(k\log n))$
+   - Results in $\log(C|A|) + \sum_i q_i d^+_i \ge \log(k|\partial_H A|\log n)$
+ - 
+
+<!-- For the low-degree case, if we sample with probabilities $q_i = \frac{Ck}{|A|}$, then it suffices to get each step's cost to $O(1/k)$, or alternatively $O(|A|/(k\log n))$. -->
+
+
+<!--
+- But the above is not sufficient, and it is instead sufficient to get
+$$ \begin{align*}
+    \text{cost}(A) &< O(\sum_{v\in A} \frac{k \sqrt{d_H(v)}}{\sqrt{|A|}})\\
+    \iff |\partial_HA|\exp(-C (\sum_{v\in A} q_v d^+_v)) &< \cdots\\
+    \leftarrow &< 5
+\end{align*}$$
+-->
 
 
 ### Questions:
