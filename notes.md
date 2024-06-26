@@ -83,7 +83,13 @@ __Author's argument:__
  - I.e., we can expect to sample at least $\log (k|\partial_H A|)$ edges from the boundary.
  - Alternatively, we can get each step to $O(|A|/(k\log n))$
    - Results in $\log(C|A|) + \sum_i q_i d^+_i \ge \log(k|\partial_H A|\log n)$
- - 
+        - So if $k$ is a constant, this seems like quite a difficult condition to enforce.
+
+<!-- - By the density condition we have $|A| > k|\partial_H A|$, so then we 'need' $\sum_i q_i d^+_i \ge \log n$
+            - So, this direction seems difficult for 
+-->
+ - The Type 0 condition, however, doesn't guarantee either of these. An intuition that the analysis applied to types 1+ cannot be applied here is that for a type 0 component, with $q = \frac{Ck}{|A|}$, the probability of failure is lower bounded by a constant, so the upper bound used implicitly when simply summing costs for all steps is too rough.
+    - Similarly, if enough vertices have degrees higher than the boundary (similar to type 2/3), then we also cannot use this analysis.
 
 <!-- For the low-degree case, if we sample with probabilities $q_i = \frac{Ck}{|A|}$, then it suffices to get each step's cost to $O(1/k)$, or alternatively $O(|A|/(k\log n))$. -->
 
