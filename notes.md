@@ -36,8 +36,8 @@ __Author's argument:__
     - Then the sum of edges leaving a type-0 component, given all type-0 components are disjoint according to this procedure, is $\sum_{A_0}|\partial_H A_0| < \sum_{A_0}|A|/k < n/k$.
  - 1: $d_H(A) \le 5|\partial_H A|$
     - Set $q = C\cdot \frac{k}{\sqrt{d(A)|A|}}$
-    - Then total probability an edge of $v$ sampled is $O(k/\sqrt{d_H(v)})$ since $|A|$ at least doubles after every successful growth.
-    - Sample edges among all vertices with probability $q$. then
+    - Then total probability an edge of $v$ sampled is $O(k/d_H(v))$ since $|A|$ at least doubles after every successful growth, and $d \le 2|A|$.
+    - Sample edges among all vertices with probability $q$. Then
         $$ \begin{align}
             \text{cost}(A)/|A| \nonumber\\ 
             \le \frac{\rho(A)}{k} \exp(-q \rho(A) |A|/k) \nonumber\\
@@ -48,6 +48,11 @@ __Author's argument:__
             \end{align} $$
         where the last inequality follows from that $(1)$, letting $x=\rho(A)$, is maximized at $x_0 = (2/C)^25/k$.
     - Thus each vertex incurs a total cost of at most $n\log n * O(1/(k\log n)) = O(n / k)$.
+    - __Notes__:
+        - What's the strict condition to get $\text{cost}(A)/|A| \le O(1/(k\log n))$?
+          - $\frac{|\partial_H A|}{|A|}\exp(-\sum q_i d^+_i) \le C'/(k\log n)$
+          - $\log |A| + \sum q_i d^+_i \ge \log(|\partial_H A|k\log n) - C''$
+        - One idea to show that we cannot prove this case to work for $k \le \log n$ is to construct some sequence of graphs of increasing size for which it is clear we cannot get $O(n / k)$ inter-component edges.
  - 2: $A$ is the first low-degree component of level $\le \ell(A)$ containing $v(A)$
     - Then the same is true for at least half the neighbors of $v(A)$.
       - __Pr__: Assume not, then at least $d_H(A)/2$ vertices in $A$ are contained in components $B_1,\ldots, B_s$ of level at most $\ell(A)$. Then the number of neighbors of $v$ is at most $\sum_i|\partial_H B_i| \le \sum_i 2^{\ell(B_i) + 1} |B_i|/k \le 2^{\ell(A) + 1} \sum_i |B_i| / k \le 2^{\ell(A) + 1} |A|/k \le 2|\partial_H A|$. Thus $d_H(v) \le 2(2|\partial_H A|) + |\partial_H A| = 5|\partial_H A|$, a contradiction.
@@ -88,8 +93,13 @@ __Author's argument:__
 <!-- - By the density condition we have $|A| > k|\partial_H A|$, so then we 'need' $\sum_i q_i d^+_i \ge \log n$
             - So, this direction seems difficult for 
 -->
+
  - The Type 0 condition, however, doesn't guarantee either of these. An intuition that the analysis applied to types 1+ cannot be applied here is that for a type 0 component, with $q = \frac{Ck}{|A|}$, the probability of failure is lower bounded by a constant, so the upper bound used implicitly when simply summing costs for all steps is too rough.
     - Similarly, if enough vertices have degrees higher than the boundary (similar to type 2/3), then we also cannot use this analysis.
+
+    - Suggesion: Find a nice condition for which the proof becomes easier in some way. Make a log of assumptions that make the proof easier. Is there a simple natural condition to simplify the proof?
+        - Expander decomposition
+
 
 <!-- For the low-degree case, if we sample with probabilities $q_i = \frac{Ck}{|A|}$, then it suffices to get each step's cost to $O(1/k)$, or alternatively $O(|A|/(k\log n))$. -->
 
@@ -102,6 +112,14 @@ $$ \begin{align*}
     \leftarrow &< 5
 \end{align*}$$
 -->
+
+
+### Notes:
+---
+
+- Can we use the fact that when $N$ components of similar density combine, the sum of densities of the containing component across vertices decreases by a factor of at least $N$?
+    - It seems the type 2 proof is a sort of way to make vertices "pay" for components according to the history of the densities of components containing them, such that due to the above property, each vertex ends up paying $O(1/k)$ in total.
+    - The author's proof uses the $d > 5|\partial_H A|$ condition to enforce that there are enough vertices to cover the cost
 
 
 ### Questions:
