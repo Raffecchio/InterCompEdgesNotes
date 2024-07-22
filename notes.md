@@ -53,6 +53,14 @@ __Author's argument:__
           - $\frac{|\partial_H A|}{|A|}\exp(-\sum q_i d^+_i) \le C'/(k\log n)$
           - $\log |A| + \sum q_i d^+_i \ge \log(|\partial_H A|k\log n) - C''$
         - One idea to show that we cannot prove this case to work for $k \le \log n$ is to construct some sequence of graphs of increasing size for which it is clear we cannot get $O(n / k)$ inter-component edges.
+        - The intuition I currently have is that if $k$ is "large enough", the exponential factor in the cost is small enough such that we can perform the 'rough' approxmation of summing costs.
+        - Using the bound $d \le 2|A|$, we can get the above condition to:
+        $$
+        k\frac{|\partial_H A|}{2|A|} + C'' \ge \log(k\frac{|\partial_H A|}{|A|}\log n)
+        \\\implies \frac 1 2 \rho(A) - \log(\rho(A)) + C'' \ge \log\log n
+        \\\implies \rho(A) \ge 4\log\log n
+        $$
+        - For the right choice of $C''$. So if we assume that the graph is a $4\log\log n$-expander, or more specifically if there is no subset $B \subset V$ with $1 < k\frac{|\partial_H B|}{|B|} < 4\log\log n$, the proof is easy.
  - 2: $A$ is the first low-degree component of level $\le \ell(A)$ containing $v(A)$
     - Then the same is true for at least half the neighbors of $v(A)$.
       - __Pr__: Assume not, then at least $d_H(A)/2$ vertices in $A$ are contained in components $B_1,\ldots, B_s$ of level at most $\ell(A)$. Then the number of neighbors of $v$ is at most $\sum_i|\partial_H B_i| \le \sum_i 2^{\ell(B_i) + 1} |B_i|/k \le 2^{\ell(A) + 1} \sum_i |B_i| / k \le 2^{\ell(A) + 1} |A|/k \le 2|\partial_H A|$. Thus $d_H(v) \le 2(2|\partial_H A|) + |\partial_H A| = 5|\partial_H A|$, a contradiction.
@@ -97,7 +105,7 @@ __Author's argument:__
  - The Type 0 condition, however, doesn't guarantee either of these. An intuition that the analysis applied to types 1+ cannot be applied here is that for a type 0 component, with $q = \frac{Ck}{|A|}$, the probability of failure is lower bounded by a constant, so the upper bound used implicitly when simply summing costs for all steps is too rough.
     - Similarly, if enough vertices have degrees higher than the boundary (similar to type 2/3), then we also cannot use this analysis.
 
-    - Suggesion: Find a nice condition for which the proof becomes easier in some way. Make a log of assumptions that make the proof easier. Is there a simple natural condition to simplify the proof?
+    - Suggestion: Find a nice condition for which the proof becomes easier in some way. Make a log of assumptions that make the proof easier. Is there a simple natural condition to simplify the proof?
         - Expander decomposition
 
 
